@@ -1,0 +1,21 @@
+{
+  "name": "shop-parser",
+  "version": "1.0.0",
+  "main": "./src/app.ts",
+  "type": "module",
+  "scripts": {
+    "start": "tsx ./src/app.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "eslint": "^9.29.0",
+    "globals": "^16.2.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.35.0"
+  }
+}
