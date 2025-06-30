@@ -3,18 +3,18 @@ import { fetchLink } from "../utils/dom";
 import { sanitizeLink } from "../utils/link";
 
 export async function trackNewItem(link: string, userId: number) {
-  const fullLink = link;
-  link = sanitizeLink(link);
+  const sanitizedLink = sanitizeLink(link);
+  if (sanitizedLink === false) return false;
   const item = await checkItemAvailable(link);
   if (!item) {
-    const data = await fetchLink(fullLink);
+    const data = await fetchLink(link);
     if (data !== null && data !== undefined) {
       const newItem = await addItemToDb(
         parseInt(data.id),
         data.name,
         parseFloat(data.price),
         data.photo,
-        link
+        sanitizedLink
       );
       const addingItem = await addItemToUser(newItem, userId);
       if (addingItem !== null) {

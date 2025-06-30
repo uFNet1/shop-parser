@@ -1,4 +1,11 @@
 export function sanitizeLink(link: string) {
   const searchFor = "product/";
-  return link.slice(link.indexOf(searchFor) + searchFor.length, -1);
+  const findIndex = link.indexOf(searchFor);
+  if (findIndex === -1) {
+    console.error("Can't sanitize link. Incorrect url " + link);
+    return false;
+  } else {
+    return link.slice(findIndex + searchFor.length, -1);
+  }
+  
 }
