@@ -1,4 +1,5 @@
 import jsdom from "jsdom";
+import { sanitizePhotoLink } from "./link";
 const { JSDOM } = jsdom;
 
 // const url =
@@ -14,25 +15,32 @@ export async function fetchLink(url: string) {
     const id = findItemId(dom);
     const name = findName(dom);
     const price = findPrice(dom);
+    const nonActionPrice = findNonActionPrice(dom);
     const cardPrice = findPriceAtbCard(dom);
     const action = findActionLabel(dom);
     const photo = findPhoto(dom);
-    if (
-      typeof id === "string" &&
-      typeof name === "string" &&
-      typeof price === "string" &&
-      typeof cardPrice === "string" &&
-      typeof action === "string" &&
-      typeof photo === "string"
-    ) {
+    if (id !== null && name !== null && price !== null) {
+      let sanitizedPhoto: string | null;
+      if (typeof photo === "string") {
+        sanitizedPhoto = sanitizePhotoLink(photo);
+      } else {
+        sanitizedPhoto = null;
+      }
+
       return {
         id: id,
         name: name,
         price: price,
         cardPrice: cardPrice,
+        nonActionPrice: nonActionPrice,
         action: action,
-        photo: photo,
+        photo: sanitizedPhoto,
       };
+    } else {
+      console.error(`Can't return data because important parameter is null`);
+      console.log(id);
+      console.log(name);
+      console.log(price);
     }
   } else {
     console.error(`Can't fetch ${url} status ${String(response.status)}`);
@@ -46,7 +54,22 @@ function parseDOM(html: string) {
 }
 
 function findPrice(dom: jsdom.JSDOM) {
-  const selector = `body > div.product-about-fixed.js-product-container.js-product-header-container.product-page-header--hide > div > div > div.product-about__buy-row > div.product-price-wrapper > div.product-price.product-price--weight.product-price--sale.product-about__price > data.product-price__top > span`;
+  const selectorArr = [
+    `#productMain > div > div.product-about__buy-row > div.product-price.product-price--weight.product-about__price > data > span`,
+    `body > div.product-about-fixed.js-product-container.js-product-header-container.product-page-header--hide > div > div > div.product-about__buy-row > div.product-price-wrapper > div > data > span`,
+    `#productMain > div > div.product-about__buy-row > div.product-price.product-price--weight.product-price--sale.product-about__price > data.product-price__top > span`,
+  ];
+  for (const element of selectorArr) {
+    const content = findLogic(dom, element, "text");
+    if (content !== null) {
+      return content;
+    }
+  }
+  return null;
+}
+
+function findNonActionPrice(dom: jsdom.JSDOM) {
+  const selector = `#productMain > div > div.product-about__buy-row > div.product-price.product-price--weight.product-price--sale.product-about__price > data.product-price__bottom > span`;
 
   return findLogic(dom, selector, "text");
 }
@@ -85,11 +108,11 @@ function findLogic(dom: jsdom.JSDOM, selector: string, type: string) {
     if (data) {
       if (data.textContent !== "" && data.textContent !== null)
         return data.textContent.trim();
-    } else return false;
+    } else return null;
   } else if (type === "src") {
     const data = dom.window.document.querySelector(selector);
     if (data !== null && data instanceof dom.window.HTMLImageElement) {
       return data.src.trim();
-    } else return false;
+    } else return null;
   }
 }

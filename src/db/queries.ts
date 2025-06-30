@@ -8,20 +8,24 @@ export async function addItemToDb(
   itemId: number,
   itemName: string,
   itemPrice: number,
-  itemPhoto: string,
+  itemAtbCardPrice: number | null,
+  itemNonActionPrice: number | null,
+  itemPhoto: string | null,
   itemLink: string
 ) {
   return await ItemData.create({
     itemId: itemId,
     itemName: itemName,
-    storedPrice: itemPrice,
+    itemPrice: itemPrice,
+    itemAtbCardPrice: itemAtbCardPrice,
+    itemNonActionPrice: itemNonActionPrice,
     itemPhoto: itemPhoto,
     itemLink: itemLink,
   });
 }
 
-export async function checkItemAvailable(link: string) {
-  return await ItemData.findOne({ where: { itemLink: link } });
+export async function checkItemAvailable(fullLink: string) {
+  return await ItemData.findOne({ where: { itemLink: fullLink } });
 }
 
 export async function addItemToUser(
@@ -30,13 +34,22 @@ export async function addItemToUser(
   userId: number
 ) {
   const [user, created] = await User.findOrCreate({ where: { tgId: userId } });
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  await user.addItemData(item);
   const tracked = await TrackedItems.findOne({
     where: {
       userId: user.id,
       itemDataId: item.id,
     },
   });
-  return tracked;
+  if (!tracked) {
+    await user.addItemData(item);
+  } else {
+    return null;
+  }
+  const newItem = await TrackedItems.findOne({
+    where: {
+      userId: user.id,
+      itemDataId: item.id,
+    },
+  });
+  return newItem;
 }

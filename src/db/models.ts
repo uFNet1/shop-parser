@@ -19,10 +19,20 @@ export const ItemData = sequelize.define("itemData", {
     unique: false,
     allowNull: false,
   },
-  storedPrice: {
+  itemPrice: {
     type: DataTypes.FLOAT,
     unique: false,
     allowNull: false,
+  },
+  itemAtbCardPrice: {
+    type: DataTypes.FLOAT,
+    unique: false,
+    allowNull: true,
+  },
+  itemNonActionPrice: {
+    type: DataTypes.FLOAT,
+    unique: false,
+    allowNull: true,
   },
   itemPhoto: {
     type: DataTypes.STRING,
