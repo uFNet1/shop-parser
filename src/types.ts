@@ -1,4 +1,5 @@
 export interface ItemDataModel {
+  itemId: number;
   itemName: string;
   itemPrice: number;
   itemAtbCardPrice: number | null;

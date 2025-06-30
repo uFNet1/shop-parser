@@ -1,4 +1,11 @@
-import { addItemToDb, addItemToUser, checkItemAvailable } from "../db/queries";
+import {
+  addItemToDb,
+  addItemToUser,
+  checkItemAvailable,
+  removeItemFromUser,
+  returnAllTrackedItems,
+} from "../db/queries";
+import { ItemDataModel } from "../types";
 import { fetchLink } from "../utils/dom";
 import { sanitizeLink } from "../utils/link";
 
@@ -42,4 +49,19 @@ export async function trackNewItem(link: string, userId: number) {
       return "alreadyAdded";
     }
   }
+}
+
+export async function getUserTrackedItems(userId: number) {
+  //
+  const userItems = (await returnAllTrackedItems(userId)) as any[];
+  //userItems = [itemData{dataValues{}}]
+  const userItemsArr: ItemDataModel[] = [];
+  userItems.map((el) => {
+    return userItemsArr.push(el.dataValues as ItemDataModel);
+  });
+  return userItemsArr;
+}
+
+export async function unsubscribeItemFromUser(itemId: number, userId: number) {
+  return await removeItemFromUser(itemId, userId);
 }

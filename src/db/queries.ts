@@ -28,6 +28,21 @@ export async function checkItemAvailable(fullLink: string) {
   return await ItemData.findOne({ where: { itemLink: fullLink } });
 }
 
+export async function returnAllTrackedItems(tgId: number) {
+  const userItems = await User.findOne({
+    where: { tgId: tgId },
+    include: [
+      {
+        model: ItemData,
+        through: {
+          attributes: [], // exclude TrackedItems join table fields if not needed
+        },
+      },
+    ],
+  });
+  return userItems?.itemData;
+}
+
 export async function addItemToUser(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   item: Model<any, any>,
@@ -52,4 +67,20 @@ export async function addItemToUser(
     },
   });
   return newItem;
+}
+
+export async function removeItemFromUser(itemId: number, tgId: number) {
+  const item = await ItemData.findOne({
+    where: {
+      itemId: itemId,
+    },
+  });
+  if (item) {
+    const user = await User.findOne({ where: { tgId: tgId } });
+    if (user !== null) {
+      await user.removeItemData(item);
+      return true;
+    } else return false;
+  }
+  return false;
 }

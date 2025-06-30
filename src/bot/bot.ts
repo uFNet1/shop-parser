@@ -1,9 +1,20 @@
-import { Bot } from "grammy";
+import { Bot, InlineKeyboard } from "grammy";
 import { BOT_TOKEN } from "../envConst";
-import { trackNewItem } from "./commands";
+import {
+  getUserTrackedItems,
+  trackNewItem,
+  unsubscribeItemFromUser,
+} from "./commands";
 import { restorePhotoLink } from "../utils/link";
 import { ItemDataModel } from "../types";
-import { createItemCard, createItemCardPhoto } from "./formatUtils";
+import {
+  createItemCard,
+  createItemCardPhoto,
+  escapeMarkdown,
+} from "./formatUtils";
+
+const UNSUBSCRIBE_CALLBACK_START = "uns";
+
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 export const bot = new Bot(BOT_TOKEN!);
 
@@ -19,6 +30,37 @@ bot.command("start", (ctx) => ctx.reply("Up and running!"));
 bot.command("addnewitem", async (ctx) => {
   console.log("track new item");
   await ctx.reply("Надішли посилання"); //TODO Specify how to send link
+});
+
+bot.command("list", async (ctx) => {
+  const trackedItems = await getUserTrackedItems(ctx.chatId);
+  let temp: string;
+  let idsArr: string[][] = [];
+  temp = "**>";
+  for (let index = 0; index < trackedItems.length; index++) {
+    console.log(index);
+    const id = trackedItems[index].itemId;
+    const name = trackedItems[index].itemName;
+
+    idsArr.push([`❌ ${name}`, `${UNSUBSCRIBE_CALLBACK_START}${String(id)}`]);
+
+    temp = temp.concat(`>${escapeMarkdown(name)}\\;`);
+    if ((index % 5 === 0 && index !== 0) || index === trackedItems.length - 1) {
+      temp = temp.concat("||");
+      const buttonsColumn = idsArr.map(([label, data]) => [
+        InlineKeyboard.text(label, data),
+      ]);
+      const keyboard = InlineKeyboard.from(buttonsColumn);
+      await ctx.reply(temp, {
+        parse_mode: "MarkdownV2",
+        reply_markup: keyboard,
+      });
+      temp = "**>";
+      idsArr = [];
+    } else {
+      temp = temp.concat("\n");
+    }
+  }
 });
 
 bot
@@ -83,6 +125,26 @@ bot
       ); //TODO change tg username
     }
   });
+
+bot.on("callback_query:data", async (ctx) => {
+  const data = ctx.callbackQuery.data;
+  const userId = ctx.chatId;
+  if (data.startsWith(UNSUBSCRIBE_CALLBACK_START)) {
+    if (userId !== undefined) {
+      const result = await unsubscribeItemFromUser(
+        Number(data.slice(UNSUBSCRIBE_CALLBACK_START.length)),
+        userId
+      );
+      if (result)
+        await ctx.reply(
+          `Успішно відписано від ${data.slice(
+            UNSUBSCRIBE_CALLBACK_START.length
+          )}`
+        );
+    }
+  }
+  await ctx.answerCallbackQuery();
+});
 
 export function initBot() {
   bot.start().catch((err: unknown) => {
