@@ -10,7 +10,7 @@ export function createItemCard(
   if (cardPrice === null && oldPrice === null) {
     return {
       text:
-        `🛒 *${escapeMarkdown(name)}*\n` +
+        `🏷 *${escapeMarkdown(name)}*\n` +
         `💰 Ціна: *${formatNumber(price)} грн*\n`,
       options: {
         parse_mode: "MarkdownV2",
@@ -19,7 +19,7 @@ export function createItemCard(
   } else if (typeof cardPrice === "number" && typeof oldPrice === "number") {
     return {
       text:
-        `🛒 *${escapeMarkdown(name)}*\n` +
+        `🏷 *${escapeMarkdown(name)}*\n` +
         `💰 Ціна: *${formatNumber(price)} грн* \\(~${formatNumber(
           oldPrice
         )} грн~\\)\n` +
@@ -31,7 +31,7 @@ export function createItemCard(
   } else if (typeof cardPrice === "number" && oldPrice === null) {
     return {
       text:
-        `🛒 *${escapeMarkdown(name)}*\n` +
+        `🏷 *${escapeMarkdown(name)}*\n` +
         `💰 Ціна: *${formatNumber(price)} грн*\n` +
         `💳 З картою АТБ: *${formatNumber(cardPrice)} грн*\n`,
       options: {
@@ -41,7 +41,7 @@ export function createItemCard(
   } else if (cardPrice === null && typeof oldPrice === "number") {
     return {
       text:
-        `🛒 *${escapeMarkdown(name)}*\n` +
+        `🏷 *${escapeMarkdown(name)}*\n` +
         `💰 Ціна: *${formatNumber(price)} грн* \\(~${formatNumber(
           oldPrice
         )} грн~\\)\n`,
@@ -52,7 +52,7 @@ export function createItemCard(
   } else {
     return {
       text:
-        `🛒 *${escapeMarkdown(name)}*\n` +
+        `🏷 *${escapeMarkdown(name)}*\n` +
         `💰 Ціна: *${formatNumber(price)} грн*\n`,
       options: {
         parse_mode: "MarkdownV2",
@@ -73,7 +73,7 @@ export function createItemCardPhoto(
     return {
       photo: photoUrl,
       caption:
-        `🛒 *${escapeMarkdown(name)}*\n` +
+        `🏷 *${escapeMarkdown(name)}*\n` +
         `💰 Ціна: *${formatNumber(price)} грн*\n`,
       options: {
         parse_mode: "MarkdownV2",
@@ -83,7 +83,7 @@ export function createItemCardPhoto(
     return {
       photo: photoUrl,
       caption:
-        `🛒 *${escapeMarkdown(name)}*\n` +
+        `🏷 *${escapeMarkdown(name)}*\n` +
         `💰 Ціна: *${formatNumber(price)} грн* \\(~${formatNumber(
           oldPrice
         )} грн~\\)\n` +
@@ -96,7 +96,7 @@ export function createItemCardPhoto(
     return {
       photo: photoUrl,
       caption:
-        `🛒 *${escapeMarkdown(name)}*\n` +
+        `🏷 *${escapeMarkdown(name)}*\n` +
         `💰 Ціна: *${formatNumber(price)} грн*\n` +
         `💳 З картою АТБ: *${formatNumber(cardPrice)} грн*\n`,
       options: {
@@ -107,7 +107,7 @@ export function createItemCardPhoto(
     return {
       photo: photoUrl,
       caption:
-        `🛒 *${escapeMarkdown(name)}*\n` +
+        `🏷 *${escapeMarkdown(name)}*\n` +
         `💰 Ціна: *${formatNumber(price)} грн* \\(~${formatNumber(
           oldPrice
         )} грн~\\)\n`,
@@ -119,7 +119,7 @@ export function createItemCardPhoto(
     return {
       photo: photoUrl,
       caption:
-        `🛒 *${escapeMarkdown(name)}*\n` +
+        `🏷 *${escapeMarkdown(name)}*\n` +
         `💰 Ціна: *${formatNumber(price)} грн*\n`,
       options: {
         parse_mode: "MarkdownV2",
