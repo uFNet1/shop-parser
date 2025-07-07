@@ -3,6 +3,10 @@ import db from "./db/db";
 import { initBot } from "./bot/bot";
 import cron from 'node-cron';
 import { checkAllDiscounts } from "./utils/parser/parsePage";
+import express from "express";
+
+const server = express();
+server.use(express.json());
 
 const start = async () => {
   try {
@@ -20,3 +24,11 @@ const start = async () => {
 };
 
 await start();
+
+server.get("/testing", (req, res) => {
+  res.sendStatus(200);
+});
+
+server.listen((process.env.S_PORT as unknown as number) || 8080, () => {
+  console.log("Server started");
+});
