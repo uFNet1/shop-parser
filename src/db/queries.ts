@@ -24,8 +24,12 @@ export async function addItemToDb(
   });
 }
 
-export async function checkItemAvailable(fullLink: string) {
-  return await ItemData.findOne({ where: { itemLink: fullLink } });
+export async function checkItemAvailable(sanitizedLink: string) {
+  return await ItemData.findOne({ where: { itemLink: sanitizedLink } });
+}
+
+export async function getItemById(id: number) {
+  return await ItemData.findOne({ where: { itemId: id } });
 }
 
 export async function returnAllTrackedItems(tgId: number) {
@@ -83,4 +87,12 @@ export async function removeItemFromUser(itemId: number, tgId: number) {
     } else return false;
   }
   return false;
+}
+
+export async function getAllSubscribedUsersByItemId(id: number) {
+  return await TrackedItems.findAll({where: {itemDataId: id}})
+}
+
+export async function getUserById(id: number) {
+ return await User.findOne({where: {id: id}})
 }

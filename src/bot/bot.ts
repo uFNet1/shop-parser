@@ -5,7 +5,7 @@ import {
   trackNewItem,
   unsubscribeItemFromUser,
 } from "./commands";
-import { restorePhotoLink } from "../utils/link";
+import { restorePhotoLink } from "../utils/formatLink";
 import { ItemDataModel } from "../types";
 import {
   createItemCard,

@@ -7,25 +7,41 @@ import {
 } from "../db/queries";
 import { ItemDataModel } from "../types";
 import { fetchLink } from "../utils/dom";
-import { sanitizeLink } from "../utils/link";
+import { findItemId, findName, findPrice, findNonActionPrice, findPriceAtbCard, findPhoto } from "../utils/dom/selectors/domSelectors";
+import { sanitizeLink, sanitizePhotoLink } from "../utils/formatLink";
 
 export async function trackNewItem(link: string, userId: number) {
   const sanitizedLink = sanitizeLink(link);
   if (sanitizedLink === null) return false;
   const item = await checkItemAvailable(sanitizedLink);
   if (!item) {
-    const data = await fetchLink(link);
-    if (data !== null && data !== undefined) {
+    const dom = await fetchLink(link);
+    if (dom === null) return false;
+
+    const id = findItemId(dom);
+    const name = findName(dom);
+    const price = findPrice(dom);
+    const nonActionPrice = findNonActionPrice(dom);
+    const cardPrice = findPriceAtbCard(dom);
+    const photo = findPhoto(dom);
+
+    if (id !== null && id !== undefined && name !== null && name !== undefined && price !== null && price !== undefined) {
+      let sanitizedPhoto: string | null;
+      if (typeof photo === "string") {
+        sanitizedPhoto = sanitizePhotoLink(photo);
+      } else {
+        sanitizedPhoto = null;
+      }
       console.log("Adding item to DB");
       const newItem = await addItemToDb(
-        parseInt(data.id),
-        data.name,
-        parseFloat(data.price),
-        typeof data.cardPrice === "string" ? parseFloat(data.cardPrice) : null,
-        typeof data.nonActionPrice === "string"
-          ? parseFloat(data.nonActionPrice)
+        parseInt(id),
+        name,
+        parseFloat(price),
+        typeof cardPrice === "string" ? parseFloat(cardPrice) : null,
+        typeof nonActionPrice === "string"
+          ? parseFloat(nonActionPrice)
           : null,
-        data.photo,
+        sanitizedPhoto,
         sanitizedLink
       );
       const addingItem = await addItemToUser(newItem, userId);
@@ -35,10 +51,14 @@ export async function trackNewItem(link: string, userId: number) {
       } else {
         return "alreadyAdded";
       }
+
     } else {
-      console.error("Data is null or undefined at trackNewItem()");
-      return false;
+      console.error(`Can't return data because important parameter is null`);
+      console.log(id);
+      console.log(name);
+      console.log(price);
     }
+
   } else {
     console.log("ITEM ALREDY EXISTS!");
     const addingItem = await addItemToUser(item, userId);

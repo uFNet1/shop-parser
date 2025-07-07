@@ -16,3 +16,25 @@ export interface CardPhoto {
   caption: string;
   options: { parse_mode: "MarkdownV2" };
 }
+
+export interface CartDataObject {
+  weight: number;
+
+  totalSum: number; //price with discount
+  totalAtbCard: number; //price with atb card
+
+  dicsountSimple: number; //discount amount
+  discountProductCoupon: number;
+  totalOffDiscount: number; //price without discount
+  cashbackSum: number;
+  deliveryCost: number;
+}
+
+export interface ParserData {
+  id: string | null,
+  price: string | null,
+  oldPrice: string | null,
+  priceAtbCard: string | null,
+}
+
+  
