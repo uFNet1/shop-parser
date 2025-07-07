@@ -5,11 +5,15 @@ import { fetchQueryPage } from "../dom";
 import { findAllItemsOnPage, findLastPage } from "../dom/selectors/domSelectors";
 
 const ECONOMY_PAGE = `https://www.atbmarket.com/promo/economy?page=`;
+const SUPERDISCOUNTS_PAGE = `https://www.atbmarket.com/promo/sale_tovari?page=`;
+const ATBCARDPRICE_PAGE = `https://www.atbmarket.com/promo/micni?page=`
 
+const discountPagesArr = [ECONOMY_PAGE, SUPERDISCOUNTS_PAGE, ATBCARDPRICE_PAGE];
 
 export async function checkAllDiscounts() {
+  for (const discountPage of discountPagesArr) {
   console.log('Fetching page...')
-  const firstPage = await fetchQueryPage(ECONOMY_PAGE, 1);
+  const firstPage = await fetchQueryPage(discountPage, 1);
   if (firstPage === null) return null;
   const pagesCount = findLastPage(firstPage);
   console.log('Got page count. ' + pagesCount + ' pages')
@@ -17,7 +21,7 @@ export async function checkAllDiscounts() {
     console.log(`Processing page` + index)
     let page;
     if (index === 1) page = firstPage;
-    else page = await fetchQueryPage(ECONOMY_PAGE, index);
+    else page = await fetchQueryPage(discountPage, index);
     const itemsArr = findAllItemsOnPage(page);
     for (const el of itemsArr) {
       if (el.id === null || el.price === null || el.oldPrice === null) continue;
@@ -47,10 +51,7 @@ export async function checkAllDiscounts() {
         await rawItem.save();
         await sendPriceCard(item.itemName, Number(el.price), Number(el.priceAtbCard), null, item.itemPhoto, Number(rawItem.dataValues.id));
       }
-       
-      
     }
-    
-
+  }
   }
 }
