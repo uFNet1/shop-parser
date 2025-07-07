@@ -27,23 +27,23 @@ export async function checkAllDiscounts() {
 
       //discount without atb card discount
       if (item.itemPrice !== Number(el.price) && el.priceAtbCard === null) {
-        item.itemPrice = Number(el.price);
-        item.itemNonActionPrice = Number(el.oldPrice);
-        item.itemAtbCardPrice = null;
+        rawItem.itemPrice = Number(el.price);
+        rawItem.itemNonActionPrice = Number(el.oldPrice);
+        rawItem.itemAtbCardPrice = null;
         await rawItem.save();
         await sendPriceCard(item.itemName, Number(el.price), null, Number(el.oldPrice), item.itemPhoto, Number(rawItem.dataValues.id));
       }
       //discount with atb card discount 
       else if (item.itemPrice !== Number(el.price) && (el.priceAtbCard !== null && item.itemAtbCardPrice !== Number(el.priceAtbCard))) {
-        item.itemPrice = Number(el.price);
-        item.itemNonActionPrice = Number(el.oldPrice);
-        item.itemAtbCardPrice = Number(el.priceAtbCard);
+        rawItem.itemPrice = Number(el.price);
+        rawItem.itemNonActionPrice = Number(el.oldPrice);
+        rawItem.itemAtbCardPrice = Number(el.priceAtbCard);
         await rawItem.save();
         await sendPriceCard(item.itemName, Number(el.price), Number(el.priceAtbCard), Number(el.oldPrice), item.itemPhoto, Number(rawItem.dataValues.id));
       }
       //atb card discount only
       else if (item.itemPrice === Number(el.price) && item.itemAtbCardPrice !== Number(el.priceAtbCard)) {
-        item.itemAtbCardPrice = Number(el.priceAtbCard);
+        rawItem.itemAtbCardPrice = Number(el.priceAtbCard);
         await rawItem.save();
         await sendPriceCard(item.itemName, Number(el.price), Number(el.priceAtbCard), null, item.itemPhoto, Number(rawItem.dataValues.id));
       }
